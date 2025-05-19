@@ -9,6 +9,7 @@ from middlewares.handle import handle_middleware
 from module_admin.controller.cache_controller import cacheController
 from module_admin.controller.captcha_controller import captchaController
 from module_admin.controller.common_controller import commonController
+from module_admin.controller.company_controller import companyController
 from module_admin.controller.config_controller import configController
 from module_admin.controller.dept_controller import deptController
 from module_admin.controller.dict_controller import dictController
@@ -71,6 +72,7 @@ controller_list = [
     {'router': postController, 'tags': ['系统管理-岗位管理']},
     {'router': dictController, 'tags': ['系统管理-字典管理']},
     {'router': configController, 'tags': ['系统管理-参数管理']},
+    {'router': companyController, 'tags': ['系统管理-公司管理']},
     {'router': noticeController, 'tags': ['系统管理-通知公告管理']},
     {'router': logController, 'tags': ['系统管理-日志管理']},
     {'router': onlineController, 'tags': ['系统监控-在线用户']},

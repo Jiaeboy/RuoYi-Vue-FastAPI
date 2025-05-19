@@ -171,7 +171,8 @@ insert into sys_menu values('104',  '岗位管理', '1',   '5', 'post',       's
 insert into sys_menu values('105',  '字典管理', '1',   '6', 'dict',       'system/dict/index',        '', '', 1, 0, 'C', '0', '0', 'system:dict:list',        'dict',          'admin', sysdate(), '', null, '字典管理菜单');
 insert into sys_menu values('106',  '参数设置', '1',   '7', 'config',     'system/config/index',      '', '', 1, 0, 'C', '0', '0', 'system:config:list',      'edit',          'admin', sysdate(), '', null, '参数设置菜单');
 insert into sys_menu values('107',  '通知公告', '1',   '8', 'notice',     'system/notice/index',      '', '', 1, 0, 'C', '0', '0', 'system:notice:list',      'message',       'admin', sysdate(), '', null, '通知公告菜单');
-insert into sys_menu values('108',  '日志管理', '1',   '9', 'log',        '',                         '', '', 1, 0, 'M', '0', '0', '',                        'log',           'admin', sysdate(), '', null, '日志管理菜单');
+insert into sys_menu values('118',  '公司管理', '1',   '9', 'company',    'system/company/index',     '', '', 1, 0, 'C', '0', '0', 'system:company:list',     'company',       'admin', sysdate(), '', null, '公司管理菜单');
+insert into sys_menu values('108',  '日志管理', '1',   '10', 'log',        '',                         '', '', 1, 0, 'M', '0', '0', '',                        'log',           'admin', sysdate(), '', null, '日志管理菜单');
 insert into sys_menu values('109',  '在线用户', '2',   '1', 'online',     'monitor/online/index',     '', '', 1, 0, 'C', '0', '0', 'monitor:online:list',     'online',        'admin', sysdate(), '', null, '在线用户菜单');
 insert into sys_menu values('110',  '定时任务', '2',   '2', 'job',        'monitor/job/index',        '', '', 1, 0, 'C', '0', '0', 'monitor:job:list',        'job',           'admin', sysdate(), '', null, '定时任务菜单');
 insert into sys_menu values('111',  '数据监控', '2',   '3', 'druid',      'monitor/druid/index',      '', '', 1, 0, 'C', '0', '0', 'monitor:druid:list',      'druid',         'admin', sysdate(), '', null, '数据监控菜单');
@@ -231,6 +232,12 @@ insert into sys_menu values('1035', '公告查询', '107', '1', '#', '', '', '',
 insert into sys_menu values('1036', '公告新增', '107', '2', '#', '', '', '', 1, 0, 'F', '0', '0', 'system:notice:add',          '#', 'admin', sysdate(), '', null, '');
 insert into sys_menu values('1037', '公告修改', '107', '3', '#', '', '', '', 1, 0, 'F', '0', '0', 'system:notice:edit',         '#', 'admin', sysdate(), '', null, '');
 insert into sys_menu values('1038', '公告删除', '107', '4', '#', '', '', '', 1, 0, 'F', '0', '0', 'system:notice:remove',       '#', 'admin', sysdate(), '', null, '');
+-- 公司管理按钮
+insert into sys_menu values('1061', '公司查询', '118', '1', '#', '', '', '', 1, 0, 'F', '0', '0', 'system:company:query',       '#', 'admin', sysdate(), '', null, '');
+insert into sys_menu values('1062', '公司新增', '118', '2', '#', '', '', '', 1, 0, 'F', '0', '0', 'system:company:add',         '#', 'admin', sysdate(), '', null, '');
+insert into sys_menu values('1063', '公司修改', '118', '3', '#', '', '', '', 1, 0, 'F', '0', '0', 'system:company:edit',        '#', 'admin', sysdate(), '', null, '');
+insert into sys_menu values('1064', '公司删除', '118', '4', '#', '', '', '', 1, 0, 'F', '0', '0', 'system:company:remove',      '#', 'admin', sysdate(), '', null, '');
+insert into sys_menu values('1065', '公司导出', '118', '5', '#', '', '', '', 1, 0, 'F', '0', '0', 'system:company:export',      '#', 'admin', sysdate(), '', null, '');
 -- 操作日志按钮
 insert into sys_menu values('1039', '操作查询', '500', '1', '#', '', '', '', 1, 0, 'F', '0', '0', 'monitor:operlog:query',      '#', 'admin', sysdate(), '', null, '');
 insert into sys_menu values('1040', '操作删除', '500', '2', '#', '', '', '', 1, 0, 'F', '0', '0', 'monitor:operlog:remove',     '#', 'admin', sysdate(), '', null, '');
@@ -302,6 +309,7 @@ insert into sys_role_menu values ('2', '104');
 insert into sys_role_menu values ('2', '105');
 insert into sys_role_menu values ('2', '106');
 insert into sys_role_menu values ('2', '107');
+insert into sys_role_menu values ('2', '118');
 insert into sys_role_menu values ('2', '108');
 insert into sys_role_menu values ('2', '109');
 insert into sys_role_menu values ('2', '110');
@@ -353,6 +361,11 @@ insert into sys_role_menu values ('2', '1035');
 insert into sys_role_menu values ('2', '1036');
 insert into sys_role_menu values ('2', '1037');
 insert into sys_role_menu values ('2', '1038');
+insert into sys_role_menu values ('2', '1061');
+insert into sys_role_menu values ('2', '1062');
+insert into sys_role_menu values ('2', '1063');
+insert into sys_role_menu values ('2', '1064');
+insert into sys_role_menu values ('2', '1065');
 insert into sys_role_menu values ('2', '1039');
 insert into sys_role_menu values ('2', '1040');
 insert into sys_role_menu values ('2', '1041');
@@ -495,6 +508,27 @@ create table sys_dict_data
   remark           varchar(500)    default null               comment '备注',
   primary key (dict_code)
 ) engine=innodb auto_increment=100 comment = '字典数据表';
+
+
+-- ----------------------------
+-- 13、公司表
+-- ----------------------------
+drop table if exists company;
+create table company (
+  id               varchar(64)     not null                   comment '公司ID',
+  name             varchar(100)    not null                   comment '公司名称',
+  city             varchar(50)     default null               comment '城市名称',
+  address          varchar(255)    default null               comment '公司地址',
+  address_desc     varchar(255)    default null               comment '地址描述',
+  version_type_name varchar(50)    default null               comment '版本类型名称',
+  status           varchar(2)      default '0'                comment '状态(0:正常,1:停用)',
+  is_delete        varchar(2)      default '0'                comment '是否删除(1:已删除,0:未删除)',
+  create_by        varchar(64)     default ''                 comment '创建者',
+  create_time      datetime        default CURRENT_TIMESTAMP  comment '创建时间',
+  update_by        varchar(64)     default ''                 comment '更新者',
+  update_time      datetime        default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP comment '更新时间',
+  primary key (id)
+) engine=innodb comment = '公司表';
 
 insert into sys_dict_data values(1,  1,  '男',       '0',           'sys_user_sex',        '',   '',        'Y', '0', 'admin', sysdate(), '', null, '性别男');
 insert into sys_dict_data values(2,  2,  '女',       '1',           'sys_user_sex',        '',   '',        'N', '0', 'admin', sysdate(), '', null, '性别女');

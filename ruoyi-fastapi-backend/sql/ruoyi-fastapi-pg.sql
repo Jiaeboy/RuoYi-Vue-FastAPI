@@ -526,8 +526,8 @@ create table sys_oper_log (
     primary key (oper_id)
 );
 alter sequence sys_oper_log_oper_id_seq restart 100;
-create index idx_sys_oper_log_bt on sys_oper_log(business_type);  
-create index idx_sys_oper_log_s on sys_oper_log(status);  
+create index idx_sys_oper_log_bt on sys_oper_log(business_type);
+create index idx_sys_oper_log_s on sys_oper_log(status);
 create index idx_sys_oper_log_ot on sys_oper_log(oper_time);
 comment on column sys_oper_log.oper_id is '日志主键';
 comment on column sys_oper_log.title is '模块标题';
@@ -721,7 +721,7 @@ create table sys_logininfor (
     primary key (info_id)
 );
 alter sequence sys_logininfor_info_id_seq restart 100;
-create index idx_sys_logininfor_s on sys_logininfor(status);  
+create index idx_sys_logininfor_s on sys_logininfor(status);
 create index idx_sys_logininfor_lt on sys_logininfor(login_time);
 comment on column sys_logininfor.info_id is '访问ID';
 comment on column sys_logininfor.user_name is '用户账号';
@@ -1045,3 +1045,36 @@ RETURN pg_catalog.array_to_string(tokens[indexnum:length], $2);
 END IF;
 END;
 $$ IMMUTABLE STRICT LANGUAGE PLPGSQL;
+
+-- ----------------------------
+-- 13、公司表
+-- ----------------------------
+drop table if exists company;
+create table company (
+    id varchar(64) not null,
+    name varchar(100) not null,
+    city varchar(50) default null,
+    address varchar(255) default null,
+    address_desc varchar(255) default null,
+    version_type_name varchar(50) default null,
+    status varchar(2) default '0',
+    is_delete varchar(2) default '0',
+    create_by varchar(64) default '',
+    create_time timestamp(0) default CURRENT_TIMESTAMP,
+    update_by varchar(64) default '',
+    update_time timestamp(0) default CURRENT_TIMESTAMP,
+    primary key (id)
+);
+comment on column company.id is '公司ID';
+comment on column company.name is '公司名称';
+comment on column company.city is '城市名称';
+comment on column company.address is '公司地址';
+comment on column company.address_desc is '地址描述';
+comment on column company.version_type_name is '版本类型名称';
+comment on column company.status is '状态(0:正常,1:停用)';
+comment on column company.is_delete is '是否删除(1:已删除,0:未删除)';
+comment on column company.create_by is '创建者';
+comment on column company.create_time is '创建时间';
+comment on column company.update_by is '更新者';
+comment on column company.update_time is '更新时间';
+comment on table company is '公司表';

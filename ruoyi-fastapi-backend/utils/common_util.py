@@ -14,7 +14,7 @@ from config.env import CachePathConfig
 
 
 def worship():
-    print("""
+    print(r"""
 ////////////////////////////////////////////////////////////////////
 //                          _ooOoo_                               //
 //                         o8888888o                              //
