@@ -1,0 +1,293 @@
+具体数据表
+CREATE TABLE `company` (
+  `id` varchar(64) NOT NULL COMMENT '公司ID',
+  `name` varchar(100) NOT NULL COMMENT '公司名称',
+  `city` varchar(50) DEFAULT NULL COMMENT '城市名称',
+  `address` varchar(255) DEFAULT NULL COMMENT '公司地址',
+  `address_desc` varchar(255) DEFAULT NULL COMMENT '地址描述',
+  `version_type_name` varchar(50) DEFAULT NULL COMMENT '版本类型名称',
+  `status` varchar(2) DEFAULT '1' COMMENT '状态(1:正常,0:冻结)',
+  `is_delete` varchar(2) DEFAULT '0' COMMENT '是否删除(1:已删除,0:未删除)',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='公司表';
+
+# 公司管理页面开发需求文档
+
+## 一、需求概述
+
+本需求旨在基于 Vue3 和 Ruoyi 框架，开发一个公司管理功能模块，集成到后台系统的 **系统管理** 菜单下。通过该模块，用户可以对公司信息进行 **增删改查** 操作。公司信息的数据表结构已提供，需根据表结构设计前端页面和后端接口。
+
+---
+
+## 二、功能目标
+
+1. **菜单集成**：在系统管理菜单下新增“公司管理”子菜单项，点击后进入公司管理页面。
+2. **数据展示**：以表格形式展示公司信息，支持分页、排序和搜索功能。
+3. **CRUD 操作**：
+   - **新增**：支持添加新的公司信息。
+   - **编辑**：支持修改已有公司信息。
+   - **删除**：支持单条删除和批量删除公司信息（逻辑删除，更新 `is_delete` 字段）。
+   - **查看**：支持查看公司详细信息。
+4. **数据校验**：对输入数据进行合法性校验，确保数据完整性和准确性。
+5. **权限控制**：基于 Ruoyi 框架的权限体系，限制不同角色对公司管理的操作权限。
+
+---
+
+## 三、数据表结构分析
+
+### 3.1 表结构说明
+
+根据提供的 SQL 建表语句，`company` 表字段如下：
+
+| 字段名             | 类型         | 描述                     | 约束条件          |
+|--------------------|--------------|--------------------------|-------------------|
+| `id`              | varchar(64)  | 公司ID                  | 主键，非空        |
+| `name`            | varchar(100) | 公司名称                | 非空              |
+| `city`            | varchar(50)  | 城市名称                | 可空              |
+| `address`         | varchar(255) | 公司地址                | 可空              |
+| `address_desc`    | varchar(255) | 地址描述                | 可空              |
+| `version_type_name` | varchar(50)  | 版本类型名称            | 可空              |
+| `status`          | varchar(2)   | 状态 (1:正常, 0:冻结)   | 默认值 '1'        |
+| `is_delete`       | varchar(2)   | 是否删除 (1:已删除, 0:未删除) | 默认值 '0'   |
+| `create_time`     | datetime     | 创建时间                | 默认当前时间      |
+| `update_time`     | datetime     | 更新时间                | 默认当前时间，更新时自动更新 |
+
+### 3.2 字段说明与前端映射
+
+- 前端表单字段需与数据表字段一一对应。
+- `create_time` 和 `update_time` 由后端自动生成，前端仅展示，不允许编辑。
+- `status` 和 `is_delete` 使用下拉框或开关控件展示和操作。
+
+---
+
+## 四、页面设计
+
+### 4.1 菜单结构
+
+- **位置**：系统管理 > 公司管理
+- **图标**：建议使用 `el-icon-office-building` 或其他适合的图标。
+- **权限标识**：`system:company:list`（具体权限标识可根据实际项目调整）。
+
+### 4.2 页面布局
+
+公司管理页面采用 Ruoyi 框架的标准布局，包含以下主要区域：
+
+1. **搜索区域**：位于页面顶部，支持按公司名称、城市、状态进行筛选。
+2. **数据表格**：展示公司信息列表，支持分页和排序。
+3. **操作按钮**：包含新增、编辑、删除、导出等功能按钮。
+4. **表单弹窗**：用于新增和编辑公司信息。
+
+### 4.3 搜索区域设计
+
+| 字段名       | 控件类型     | 是否必填 | 备注                     |
+|--------------|--------------|----------|--------------------------|
+| 公司名称     | 输入框       | 否       | 支持模糊搜索             |
+| 城市         | 输入框       | 否       | 支持模糊搜索             |
+| 状态         | 下拉框       | 否       | 选项：正常(1)、冻结(0)   |
+
+### 4.4 数据表格设计
+
+| 列名         | 对应字段          | 是否可排序 | 备注                     |
+|--------------|-------------------|------------|--------------------------|
+| 序号         | -                | 否         | 自增序号                 |
+| 公司ID       | `id`             | 否         | 仅展示                   |
+| 公司名称     | `name`           | 是         | -                        |
+| 城市         | `city`           | 是         | -                        |
+| 公司地址     | `address`        | 否         | -                        |
+| 状态         | `status`         | 是         | 展示为标签：正常/冻结    |
+| 创建时间     | `create_time`    | 是         | 格式：YYYY-MM-DD HH:mm:ss |
+| 操作         | -                | 否         | 包含查看、编辑、删除按钮 |
+
+### 4.5 表单弹窗设计（新增/编辑）
+
+| 字段名         | 控件类型     | 是否必填 | 备注                     |
+|----------------|--------------|----------|--------------------------|
+| 公司名称       | 输入框       | 是       | 最大长度100字符          |
+| 城市           | 输入框       | 否       | 最大长度50字符           |
+| 公司地址       | 输入框       | 否       | 最大长度255字符          |
+| 地址描述       | 文本框       | 否       | 最大长度255字符          |
+| 版本类型名称   | 输入框       | 否       | 最大长度50字符           |
+| 状态           | 下拉框       | 是       | 选项：正常(1)、冻结(0)   |
+
+> 📌 **注意**：`id` 字段由后端生成，前端不可编辑；`create_time` 和 `update_time` 由后端自动维护，前端仅展示。
+
+---
+
+## 五、后端接口设计
+
+基于 Ruoyi 框架，需开发以下接口以支持前端功能：
+
+### 5.1 接口列表
+
+| 接口功能         | 请求方式 | 接口路径                  | 权限标识               | 备注                     |
+|------------------|----------|---------------------------|------------------------|--------------------------|
+| 获取公司列表     | GET      | `/system/company/list`    | `system:company:list`  | 支持分页、排序、搜索     |
+| 获取公司详情     | GET      | `/system/company/{id}`    | `system:company:query` | 根据ID查询详细信息       |
+| 新增公司         | POST     | `/system/company`         | `system:company:add`   | -                        |
+| 修改公司         | PUT      | `/system/company`         | `system:company:edit`  | -                        |
+| 删除公司         | DELETE   | `/system/company/{ids}`   | `system:company:remove`| 支持批量删除，逻辑删除   |
+| 导出公司列表     | POST     | `/system/company/export`  | `system:company:export`| 导出为Excel文件          |
+
+### 5.2 接口参数与返回值
+
+#### 获取公司列表
+- **请求参数**：
+  - `pageNum`：当前页码
+  - `pageSize`：每页条数
+  - `name`：公司名称（模糊搜索）
+  - `city`：城市名称（模糊搜索）
+  - `status`：状态（精确匹配）
+- **返回值**：
+  ```json
+  {
+    "code": 200,
+    "msg": "查询成功",
+    "data": {
+      "total": 100,
+      "rows": [
+        {
+          "id": "1",
+          "name": "示例公司",
+          "city": "北京",
+          "address": "某某街道",
+          "addressDesc": "详细描述",
+          "versionTypeName": "标准版",
+          "status": "1",
+          "createTime": "2023-10-01 10:00:00",
+          "updateTime": "2023-10-02 10:00:00"
+        }
+      ]
+    }
+  }
+  ```
+
+#### 新增/修改公司
+- **请求参数**（JSON格式）：
+  ```json
+  {
+    "id": "1", // 修改时必填，新增时无需提供
+    "name": "示例公司",
+    "city": "北京",
+    "address": "某某街道",
+    "addressDesc": "详细描述",
+    "versionTypeName": "标准版",
+    "status": "1"
+  }
+  ```
+- **返回值**：
+  ```json
+  {
+    "code": 200,
+    "msg": "操作成功"
+  }
+  ```
+
+#### 删除公司
+- **请求参数**：URL中传递 `ids`，多个ID用逗号分隔，如 `/system/company/1,2,3`
+- **返回值**：
+  ```json
+  {
+    "code": 200,
+    "msg": "删除成功"
+  }
+  ```
+
+---
+
+## 六、前端开发说明
+
+### 6.1 技术栈
+- **前端框架**：Vue3 + Element Plus
+- **项目框架**：Ruoyi-Vue
+- **路由配置**：在 `src/router/index.js` 中添加公司管理路由。
+- **权限控制**：通过 `@permission` 指令控制按钮级权限。
+
+### 6.2 代码结构
+建议按照 Ruoyi 框架的目录结构组织代码：
+- 页面文件：`src/views/system/company/index.vue`（列表页）
+- 表单组件：`src/views/system/company/edit.vue`（表单弹窗组件）
+- API 文件：`src/api/system/company.js`（封装接口请求）
+
+### 6.3 关键代码片段
+
+#### API 请求封装 (`src/api/system/company.js`)
+```javascript
+import request from '@/utils/request'
+
+// 获取公司列表
+export function listCompany(query) {
+  return request({
+    url: '/system/company/list',
+    method: 'get',
+    params: query
+  })
+}
+
+// 新增公司
+export function addCompany(data) {
+  return request({
+    url: '/system/company',
+    method: 'post',
+    data: data
+  })
+}
+
+// 修改公司
+export function updateCompany(data) {
+  return request({
+    url: '/system/company',
+    method: 'put',
+    data: data
+  })
+}
+
+// 删除公司
+export function delCompany(id) {
+  return request({
+    url: '/system/company/' + id,
+    method: 'delete'
+  })
+}
+```
+
+#### 路由配置 (`src/router/index.js`)
+```javascript
+{
+  path: '/system/company',
+  component: Layout,
+  meta: { title: '公司管理', icon: 'el-icon-office-building' },
+  children: [
+    {
+      path: 'index',
+      component: () => import('@/views/system/company/index'),
+      meta: { title: '公司管理', keepAlive: true, permission: ['system:company:list'] }
+    }
+  ]
+}
+```
+
+---
+
+## 七、测试用例
+
+| 测试场景           | 操作步骤                                   | 预期结果                       |
+|--------------------|--------------------------------------------|--------------------------------|
+| 页面加载           | 访问公司管理页面                           | 页面正常加载，显示公司列表     |
+| 新增公司           | 点击新增按钮，填写表单并提交               | 新增成功，列表中显示新公司     |
+| 编辑公司           | 点击编辑按钮，修改信息并提交               | 修改成功，列表中信息更新       |
+| 删除公司           | 选中一条记录，点击删除按钮                 | 删除成功，列表中记录消失       |
+| 搜索公司           | 在搜索框输入公司名称，点击查询             | 列表显示符合条件的记录         |
+| 分页功能           | 点击下一页                                 | 显示下一页数据                 |
+
+---
+
+## 八、注意事项
+
+1. **数据校验**：前端和后端均需对必填字段和数据长度进行校验。
+2. **逻辑删除**：删除操作仅更新 `is_delete` 字段为 '1'，不物理删除记录。
+3. **权限管理**：确保不同角色只能执行授权范围内的操作。
+4. **性能优化**：列表数据量较大时，建议后端实现分页查询，避免一次性加载过多数据。
+
+> ⚠️ **重要提示**：在开发过程中，务必与后端开发人员确认接口参数和返回值格式，确保前后端联调顺畅。
